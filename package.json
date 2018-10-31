@@ -1,0 +1,14 @@
+{
+  "name": "master-class-rest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "production":"set NODE_ENV=production&&node index",
+    "staging":"set NODE_ENV=staging&&node index",
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}
