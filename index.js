@@ -8,8 +8,11 @@ var http = require('http')
 var https = require('https')
 var url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
-var config = require('./config')
 var fs = require('fs')
+
+var config = require('./config')
+var handlers = require('./lib/handlers')
+var helpers = require('./lib/helpers')
 
 
 // Instantiate the HTTP server
@@ -55,11 +58,11 @@ var unifiedServer = function (req, res) {
         return
     }
 
-    // Get the http method
-    var method = req.method.toLowerCase()
-
     // Get the query string as an object 
     var queryStringObj = parsedUrl.query
+
+    // Get the http method
+    var method = req.method.toLowerCase()
 
     // Get the headers as an object
     var headers = req.headers
@@ -71,7 +74,7 @@ var unifiedServer = function (req, res) {
         buffer += decoder.write(data)
     })
     req.on('end', function () {
-        buffer += decoder.end
+        buffer += decoder.end()
 
         // Check the router for a matching path for a handler. If one is not found, use the notFound handler instead
         var chosenHandler = typeof (router[trimmedPath]) !== 'undefined' ? router[trimmedPath] : handlers.notFound
@@ -82,8 +85,11 @@ var unifiedServer = function (req, res) {
             'queryStringObject': queryStringObj,
             'method': method,
             'headers': headers,
-            'payload': buffer
+            'payload': helpers.parseJsonToObject(buffer)
         }
+
+        console.log(data.payload)
+        
 
         // Route the request to the handler specified in the router
         chosenHandler(data, function (statusCode, payload) {
@@ -107,30 +113,9 @@ var unifiedServer = function (req, res) {
     })
 }
 
-// Define handlers
-var handlers = {}
-
-// Ping handler
-handlers.ping = function (data, callback) {
-    // Callback http status code
-    callback(200)
-}
-
-// Hello handler
-handlers.hello = function (data, callback) {
-    // Callback http status code
-    callback(200, {
-        message: "Hello World!"
-    })
-}
-
-// Not found handler
-handlers.notFound = function (data, callback) {
-    callback(404)
-}
-
 // Request router
 var router = {
-    ping: handlers.ping,
-    hello: handlers.hello
+    'ping': handlers.ping,
+    'hello': handlers.hello,
+    'users': handlers.users
 }
