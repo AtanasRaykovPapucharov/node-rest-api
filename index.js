@@ -88,9 +88,6 @@ var unifiedServer = function (req, res) {
             'payload': helpers.parseJsonToObject(buffer)
         }
 
-        console.log(data.payload)
-        
-
         // Route the request to the handler specified in the router
         chosenHandler(data, function (statusCode, payload) {
 
@@ -118,5 +115,5 @@ var router = {
     'ping': handlers.ping,
     'hello': handlers.hello,
     'users': handlers.users,
-    'tokens' : handlers.tokens
+    'tokens': handlers.tokens
 }
